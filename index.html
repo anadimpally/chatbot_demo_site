@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Demo Site</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <h1>RadiusX University</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#academics">Academics</a></li>
+                <li><a href="#admissions">Admissions</a></li>
+                <li><a href="#research">Research</a></li>
+                <li><a href="#campus-life">Campus Life</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Welcome to RadiusX </h1>
+            <p>Empowering minds, shaping futures</p>
+            <button class="cta-button">Learn More</button>
+        </div>
+    </section>
+
+    <!-- Featured Programs -->
+    <section class="programs" id="academics">
+        <h2>Featured Programs</h2>
+        <div class="program-cards">
+            <div class="card">
+                <!-- <img src="https://via.placeholder.com/300x200" alt="Computer Science"> -->
+                <h3>Computer Science</h3>
+                <p>Explore the world of technology and innovation</p>
+            </div>
+            <div class="card">
+                <!-- <img src="https://via.placeholder.com/300x200" alt="Business"> -->
+                <h3>Business Administration</h3>
+                <p>Develop leadership and management skills</p>
+            </div>
+            <div class="card">
+                <!-- <img src="https://via.placeholder.com/300x200" alt="Engineering"> -->
+                <h3>Engineering</h3>
+                <p>Create solutions for tomorrow's challenges</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- News Section
+    <section class="news">
+        <h2>Latest News</h2>
+        <div class="news-grid">
+            <div class="news-item">
+                <h3>Research Breakthrough</h3>
+                <p>University researchers make groundbreaking discovery in renewable energy.</p>
+                <a href="#" class="read-more">Read More</a>
+            </div>
+            <div class="news-item">
+                <h3>Campus Events</h3>
+                <p>Join us for the annual science fair next month.</p>
+                <a href="#" class="read-more">Read More</a>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>123 University Ave</p>
+                <p>Vancouver, British Columbia</p>
+                <p>Phone: (123) 123-1234</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#careers">Careers</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chatbot Icon and Window -->
+    <div class="chatbot-container">
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <h3>RadiusX Chat Support</h3>
+                <button class="close-chat" id="closeChat">×</button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot">
+                    <p>👋 Welcome to RadiusX University! I'm your virtual assistant, here to help you with information about our programs, admissions, campus life, and more. How can I assist you today?</p>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="messageInput" placeholder="Type your message...">
+                <button id="sendMessage">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+        <div class="chatbot-icon" id="chatbotIcon">
+            <i class="fas fa-comments"></i>
+        </div>
+    </div>
+
+    <!-- Add JavaScript -->
+    <script src="./js/chatbot.js"></script>
+
+    <!-- Add typing animation styles -->
+    <style type="text/css">
+        @keyframes typing {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+
+        .typing p {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .typing p::after {
+            content: "...";
+            animation: typing 1.5s infinite;
+        }
+    </style>
+</body>
+</html> 
