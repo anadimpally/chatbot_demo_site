@@ -434,10 +434,6 @@ footer {
 }
 
 /* File Message Styling */
-.message.file-message {
-    background: transparent !important;
-}
-
 .file-preview {
     background-color: #f0f2f5;
     padding: 10px 15px;

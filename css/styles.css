@@ -1,0 +1,88 @@
+/* File Preview */
+.file-preview {
+    background-color: #f0f2f5;
+    padding: 10px 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 300px;
+}
+
+.file-preview i {
+    font-size: 1.2rem;
+    color: #666;
+}
+
+.file-preview span {
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.file-preview small {
+    color: #666;
+    font-size: 0.8rem;
+}
+
+/* Upload Status */
+.upload-status {
+    width: 100%;
+    margin-top: 5px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    text-align: center;
+    background-color: #f0f2f5;
+    color: #666;
+}
+
+.upload-status.success {
+    background-color: #e3f9e5;
+    color: #1b873f;
+}
+
+.upload-status.error {
+    background-color: #ffeef0;
+    color: #cf222e;
+}
+
+/* File Download Link */
+.file-link {
+    width: 100%;
+    margin-top: 5px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    text-align: center;
+    background-color: #d72324;
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.3s;
+}
+
+.file-link:hover {
+    background-color: #c41f20;
+}
+
+.file-link i {
+    font-size: 0.9rem;
+    color: white;
+}
+
+.message.user .file-preview {
+    background-color: rgba(215, 35, 36, 0.1);
+}
+
+.message.user .file-preview i,
+.message.user .file-preview span,
+.message.user .file-preview small {
+    color: #d72324;
+} 

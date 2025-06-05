@@ -1,11 +1,13 @@
 // Chatbot API Configuration
 const API_KEY = 'tJ4W9nHwTT1uhdbu8RXAL5EZBBNufqNayzDFIIZh';
 const API_ENDPOINT = 'https://sbimxqdrc0.execute-api.us-east-1.amazonaws.com/api';
+const UPLOAD_ENDPOINT = 'http://localhost:3000/api/upload'; // Add separate upload endpoint
 
 class ChatbotAPI {
     constructor() {
         this.apiKey = API_KEY;
         this.apiEndpoint = API_ENDPOINT;
+        this.uploadEndpoint = UPLOAD_ENDPOINT;
         this.conversationId = null;
         this.lastMessageId = null;
     }
@@ -359,11 +361,7 @@ class ChatbotUI {
         const files = this.fileInput.files;
         if (!files.length) return;
 
-        Array.from(files).forEach(async file => {
-            // Create FormData to send file
-            const formData = new FormData();
-            formData.append('file', file);
-
+        Array.from(files).forEach(file => {
             try {
                 // Show uploading state
                 const fileMessage = document.createElement('div');
@@ -373,52 +371,77 @@ class ChatbotUI {
                 const filePreview = document.createElement('div');
                 filePreview.className = 'file-preview';
                 
-                // Add file icon and name with upload status
+                // Add file icon and name
                 filePreview.innerHTML = `
                     <i class="fas ${this.getFileIcon(file.name)}"></i>
                     <span>${file.name}</span>
-                    <small>Uploading...</small>
+                    <small>${this.formatFileSize(file.size)}</small>
                 `;
+                
+                // Add status indicator
+                const status = document.createElement('div');
+                status.className = 'upload-status';
+                status.textContent = 'Reading file...';
+                filePreview.appendChild(status);
                 
                 fileMessage.appendChild(filePreview);
                 this.chatMessages.appendChild(fileMessage);
                 this.scrollToBottom();
 
-                // Upload file to server
-                const response = await fetch(`${API_ENDPOINT}/upload`, {
-                    method: 'POST',
-                    headers: {
-                        'x-api-key': this.chatbot.apiKey
-                    },
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    throw new Error('Upload failed');
-                }
-
-                const data = await response.json();
+                // Read file as base64
+                const reader = new FileReader();
+                reader.onload = () => {
+                    try {
+                        // Get base64 data
+                        const base64Data = reader.result;
+                        
+                        // Create file object to store
+                        const fileData = {
+                            name: file.name,
+                            type: file.type,
+                            size: file.size,
+                            data: base64Data,
+                            timestamp: new Date().toISOString()
+                        };
+                        
+                        // Get existing files or initialize empty array
+                        const storedFiles = JSON.parse(localStorage.getItem('uploadedFiles') || '[]');
+                        
+                        // Add new file
+                        storedFiles.push(fileData);
+                        
+                        // Store back in localStorage
+                        localStorage.setItem('uploadedFiles', JSON.stringify(storedFiles));
+                        
+                        // Update status
+                        status.textContent = 'Stored successfully';
+                        status.className = 'upload-status success';
+                        
+                        // Add success message
+                        this.addMessage(`File "${file.name}" has been stored successfully. The file is ${this.formatFileSize(file.size)} in size.`, false);
+                        
+                    } catch (error) {
+                        console.error('File storage failed:', error);
+                        status.textContent = 'Storage failed';
+                        status.className = 'upload-status error';
+                        this.addMessage(`Sorry, I couldn't store the file "${file.name}". The file might be too large for browser storage.`, false);
+                    }
+                };
                 
-                // Update upload status
-                const statusElement = filePreview.querySelector('small');
-                statusElement.textContent = this.formatFileSize(file.size);
+                reader.onerror = () => {
+                    console.error('File reading failed');
+                    status.textContent = 'Reading failed';
+                    status.className = 'upload-status error';
+                    this.addMessage(`Sorry, I couldn't read the file "${file.name}". Please try again with a different file.`, false);
+                };
                 
-                // Add bot response about the file
-                this.addMessage(`I've received and stored your file "${file.name}". The file is now available at ${data.fileUrl}. How can I help you with this file?`, false);
-
+                // Start reading the file
+                reader.readAsDataURL(file);
+                
             } catch (error) {
-                console.error('File upload failed:', error);
-                // Update preview to show error
-                const statusElement = filePreview.querySelector('small');
-                statusElement.textContent = 'Upload failed';
-                statusElement.style.color = '#ff0000';
-                
-                // Add error message to chat
-                this.addMessage(`Sorry, I couldn't upload the file "${file.name}". Please try again or contact support if the problem persists.`, false);
+                console.error('File handling failed:', error);
+                this.addMessage(`Sorry, I couldn't process the file "${file.name}". Please try again with a different file.`, false);
             }
-
-            // Save session after file message is added
-            this.saveSessionData();
         });
 
         // Reset file input
@@ -606,6 +629,16 @@ class ChatbotUI {
                 this.clearSession();
             }
         });
+    }
+
+    // Add method to get stored files
+    getStoredFiles() {
+        return JSON.parse(localStorage.getItem('uploadedFiles') || '[]');
+    }
+
+    // Add method to clear stored files
+    clearStoredFiles() {
+        localStorage.removeItem('uploadedFiles');
     }
 }
 
