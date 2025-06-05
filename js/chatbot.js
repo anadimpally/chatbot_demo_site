@@ -132,8 +132,87 @@ class ChatbotUI {
         this.chatbotIcon = document.getElementById('chatbotIcon');
         this.chatWindow = document.getElementById('chatWindow');
         this.closeChat = document.getElementById('closeChat');
+        this.chatStart = document.getElementById('chatStart');
+        this.chatUserForm = document.getElementById('chatUserForm');
+        this.chatInput = document.getElementById('chatInput');
+        this.fileInput = null;
+        
+        // Load session data
+        this.sessionData = this.loadSessionData();
         
         this.initializeEventListeners();
+        this.setupFileUpload();
+        this.restoreSession();
+    }
+
+    // Save session data to localStorage
+    saveSessionData() {
+        const sessionData = {
+            userName: this.sessionData.userName,
+            userEmail: this.sessionData.userEmail,
+            userPhone: this.sessionData.userPhone,
+            userCountry: this.sessionData.userCountry,
+            userState: this.sessionData.userState,
+            userCity: this.sessionData.userCity,
+            userProgram: this.sessionData.userProgram,
+            chatHistory: Array.from(this.chatMessages.children).map(msg => ({
+                type: msg.classList.contains('user') ? 'user' : 'bot',
+                content: msg.querySelector('p') ? msg.querySelector('p').innerHTML : '',
+                isFile: msg.classList.contains('file-message'),
+                fileData: msg.classList.contains('file-message') ? 
+                    {
+                        preview: msg.querySelector('.file-preview').innerHTML
+                    } : null
+            }))
+        };
+        localStorage.setItem('chatSession', JSON.stringify(sessionData));
+    }
+
+    // Load session data from localStorage
+    loadSessionData() {
+        const savedSession = localStorage.getItem('chatSession');
+        return savedSession ? JSON.parse(savedSession) : { 
+            userName: null, 
+            userEmail: null, 
+            userPhone: null, 
+            userCountry: null, 
+            userState: null, 
+            userCity: null, 
+            userProgram: null, 
+            chatHistory: [] 
+        };
+    }
+
+    // Restore previous session if exists
+    restoreSession() {
+        if (this.sessionData.userName && this.sessionData.userEmail) {
+            // Add logout button
+            this.addLogoutButton();
+            
+            // Hide start screens and show chat
+            this.chatStart.style.display = 'none';
+            this.chatUserForm.style.display = 'none';
+            this.chatMessages.style.display = 'block';
+            this.chatInput.style.display = 'flex';
+
+            // Restore chat history
+            this.chatMessages.innerHTML = ''; // Clear default welcome message
+            this.sessionData.chatHistory.forEach(msg => {
+                if (msg.isFile) {
+                    const fileMessage = document.createElement('div');
+                    fileMessage.className = `message ${msg.type} file-message`;
+                    fileMessage.innerHTML = `<div class="file-preview">${msg.fileData.preview}</div>`;
+                    this.chatMessages.appendChild(fileMessage);
+                } else {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `message ${msg.type}`;
+                    messageDiv.innerHTML = `<p>${msg.content}</p>`;
+                    this.chatMessages.appendChild(messageDiv);
+                }
+            });
+
+            this.scrollToBottom();
+        }
     }
 
     initializeEventListeners() {
@@ -149,6 +228,94 @@ class ChatbotUI {
             this.chatbotIcon.style.display = 'flex';
         });
 
+        // Start conversation button
+        const startBtn = this.chatStart.querySelector('.start-conversation-btn');
+        startBtn.addEventListener('click', () => {
+            this.chatStart.style.display = 'none';
+            this.chatUserForm.style.display = 'flex';
+            
+            // Update form HTML with new fields including city
+            this.chatUserForm.innerHTML = `
+                <label for="userName">Name</label>
+                <input type="text" id="userName" required>
+                
+                <label for="userEmail">Email</label>
+                <input type="email" id="userEmail" required>
+                
+                <label for="userPhone">Phone</label>
+                <input type="tel" id="userPhone" placeholder="e.g., +1 (123) 456-7890">
+                
+                <label for="userCountry">Country</label>
+                <input type="text" id="userCountry" required>
+                
+                <label for="userState">Province/State</label>
+                <input type="text" id="userState" required>
+                
+                <label for="userCity">City</label>
+                <input type="text" id="userCity" required>
+                
+                <label for="userProgram">Interested Program</label>
+                <select id="userProgram" required>
+                    <option value="">Select a program</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Business Administration">Business Administration</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Arts and Sciences">Arts and Sciences</option>
+                    <option value="Other">Other</option>
+                </select>
+                
+                <button type="submit">Continue</button>
+            `;
+        });
+
+        // Handle form submission
+        this.chatUserForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const userName = document.getElementById('userName').value;
+            const userEmail = document.getElementById('userEmail').value;
+            const userPhone = document.getElementById('userPhone').value;
+            const userCountry = document.getElementById('userCountry').value;
+            const userState = document.getElementById('userState').value;
+            const userCity = document.getElementById('userCity').value;
+            const userProgram = document.getElementById('userProgram').value;
+            
+            if (userName && userEmail && userCountry && userState && userCity && userProgram) {
+                // Add logout button
+                this.addLogoutButton();
+                
+                // Store user data in session
+                this.sessionData = {
+                    userName,
+                    userEmail,
+                    userPhone,
+                    userCountry,
+                    userState,
+                    userCity,
+                    userProgram,
+                    chatHistory: []
+                };
+                
+                // Hide form and show chat
+                this.chatUserForm.style.display = 'none';
+                this.chatMessages.style.display = 'block';
+                this.chatInput.style.display = 'flex';
+                
+                // Clear existing messages and add personalized welcome message
+                this.chatMessages.innerHTML = '';
+                const welcomeMessage = `👋 Hi ${userName} from ${userCity}, Welcome to RadiusX University! I see you're interested in our ${userProgram} program. I'm your virtual advisor, and I can communicate in multiple languages - feel free to chat with me in any language you're comfortable with! I'm here to help you with information about our programs, admissions, campus life, and more. How can I assist you today? 🌍`;
+                this.addMessage(welcomeMessage, false);
+
+                // Add language hint message
+                setTimeout(() => {
+                    const languageHint = "💡 Tip: You can type your messages in any language, and I'll understand and respond accordingly!";
+                    this.addMessage(languageHint, false);
+                }, 1000);
+                
+                // Save session
+                this.saveSessionData();
+            }
+        });
+
         // Send message handlers
         this.sendButton.addEventListener('click', () => this.sendMessage());
         this.messageInput.addEventListener('keypress', (e) => {
@@ -156,6 +323,128 @@ class ChatbotUI {
                 this.sendMessage();
             }
         });
+
+        // Add window unload event to save session
+        window.addEventListener('beforeunload', () => {
+            this.saveSessionData();
+        });
+    }
+
+    setupFileUpload() {
+        // Create file input element
+        this.fileInput = document.createElement('input');
+        this.fileInput.type = 'file';
+        this.fileInput.id = 'fileInput';
+        this.fileInput.style.display = 'none';
+        this.fileInput.multiple = true;
+        this.fileInput.accept = '.pdf,.doc,.docx,.txt,.jpg,.jpeg,.png';
+
+        // Create upload button
+        const uploadButton = document.createElement('button');
+        uploadButton.type = 'button';
+        uploadButton.className = 'upload-btn';
+        uploadButton.innerHTML = '<i class="fas fa-paperclip"></i>';
+        uploadButton.title = 'Upload File';
+
+        // Insert elements into chat input
+        this.chatInput.insertBefore(this.fileInput, this.sendButton);
+        this.chatInput.insertBefore(uploadButton, this.sendButton);
+
+        // Add event listeners
+        uploadButton.addEventListener('click', () => this.fileInput.click());
+        this.fileInput.addEventListener('change', () => this.handleFileUpload());
+    }
+
+    handleFileUpload() {
+        const files = this.fileInput.files;
+        if (!files.length) return;
+
+        Array.from(files).forEach(async file => {
+            // Create FormData to send file
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                // Show uploading state
+                const fileMessage = document.createElement('div');
+                fileMessage.className = 'message user file-message';
+                
+                // Create file preview
+                const filePreview = document.createElement('div');
+                filePreview.className = 'file-preview';
+                
+                // Add file icon and name with upload status
+                filePreview.innerHTML = `
+                    <i class="fas ${this.getFileIcon(file.name)}"></i>
+                    <span>${file.name}</span>
+                    <small>Uploading...</small>
+                `;
+                
+                fileMessage.appendChild(filePreview);
+                this.chatMessages.appendChild(fileMessage);
+                this.scrollToBottom();
+
+                // Upload file to server
+                const response = await fetch(`${API_ENDPOINT}/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'x-api-key': this.chatbot.apiKey
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Upload failed');
+                }
+
+                const data = await response.json();
+                
+                // Update upload status
+                const statusElement = filePreview.querySelector('small');
+                statusElement.textContent = this.formatFileSize(file.size);
+                
+                // Add bot response about the file
+                this.addMessage(`I've received and stored your file "${file.name}". The file is now available at ${data.fileUrl}. How can I help you with this file?`, false);
+
+            } catch (error) {
+                console.error('File upload failed:', error);
+                // Update preview to show error
+                const statusElement = filePreview.querySelector('small');
+                statusElement.textContent = 'Upload failed';
+                statusElement.style.color = '#ff0000';
+                
+                // Add error message to chat
+                this.addMessage(`Sorry, I couldn't upload the file "${file.name}". Please try again or contact support if the problem persists.`, false);
+            }
+
+            // Save session after file message is added
+            this.saveSessionData();
+        });
+
+        // Reset file input
+        this.fileInput.value = '';
+    }
+
+    getFileIcon(fileName) {
+        const extension = fileName.split('.').pop().toLowerCase();
+        const iconMap = {
+            pdf: 'fa-file-pdf',
+            doc: 'fa-file-word',
+            docx: 'fa-file-word',
+            txt: 'fa-file-alt',
+            jpg: 'fa-file-image',
+            jpeg: 'fa-file-image',
+            png: 'fa-file-image'
+        };
+        return iconMap[extension] || 'fa-file';
+    }
+
+    formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
     // Add a message to the chat UI
@@ -171,6 +460,9 @@ class ChatbotUI {
         messageDiv.innerHTML = `<p>${this.escapeHtml(message)}</p>`;
         this.chatMessages.appendChild(messageDiv);
         this.scrollToBottom();
+        
+        // Save session after each message
+        this.saveSessionData();
     }
 
     // Format bot message for better readability
@@ -260,6 +552,60 @@ class ChatbotUI {
     // Scroll chat to bottom
     scrollToBottom() {
         this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+    }
+
+    // Modify clearSession method
+    clearSession() {
+        localStorage.removeItem('chatSession');
+        this.sessionData = { 
+            userName: null, 
+            userEmail: null, 
+            userPhone: null, 
+            userCountry: null, 
+            userState: null, 
+            userCity: null, 
+            userProgram: null, 
+            chatHistory: [] 
+        };
+        this.chatMessages.innerHTML = '';
+        
+        // Close the chat window
+        this.chatWindow.classList.remove('active');
+        this.chatbotIcon.style.display = 'flex';
+        
+        // Reset the chat window state for next open
+        setTimeout(() => {
+            // Reset all elements to initial state
+            this.chatMessages.style.display = 'none';
+            this.chatUserForm.style.display = 'none';
+            this.chatInput.style.display = 'none';
+            this.chatStart.style.display = 'flex';
+        }, 300);
+        
+        // Remove logout button
+        const logoutButton = document.querySelector('.logout-chat');
+        if (logoutButton) {
+            logoutButton.remove();
+        }
+    }
+
+    addLogoutButton() {
+        const chatHeader = document.querySelector('.chat-header');
+        const logoutButton = document.createElement('button');
+        logoutButton.className = 'logout-chat';
+        logoutButton.innerHTML = '<i class="fas fa-sign-out-alt"></i>';
+        logoutButton.title = 'End Chat Session';
+        
+        // Insert before the close button
+        const closeButton = chatHeader.querySelector('.close-chat');
+        chatHeader.insertBefore(logoutButton, closeButton);
+
+        // Add click event
+        logoutButton.addEventListener('click', () => {
+            if (confirm('Are you sure you want to end this chat session? This will clear the chat history.')) {
+                this.clearSession();
+            }
+        });
     }
 }
 
