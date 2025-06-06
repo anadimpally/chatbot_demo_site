@@ -1,6 +1,6 @@
 // Chatbot API Configuration
-const API_KEY = 'tJ4W9nHwTT1uhdbu8RXAL5EZBBNufqNayzDFIIZh';
-const API_ENDPOINT = 'https://sbimxqdrc0.execute-api.us-east-1.amazonaws.com/api';
+const API_KEY = 'ebvJBWgVrO7qob6y8j5zF25OiffduTMJ6ScWpJsL';
+const API_ENDPOINT = 'https://01cwcwm9vf.execute-api.us-east-1.amazonaws.com/api';
 const UPLOAD_ENDPOINT = 'http://localhost:3000/api/upload'; // Add separate upload endpoint
 
 class ChatbotAPI {
@@ -257,14 +257,7 @@ class ChatbotUI {
                 <input type="text" id="userCity" required>
                 
                 <label for="userProgram">Interested Program</label>
-                <select id="userProgram" required>
-                    <option value="">Select a program</option>
-                    <option value="Computer Science">Computer Science</option>
-                    <option value="Business Administration">Business Administration</option>
-                    <option value="Engineering">Engineering</option>
-                    <option value="Arts and Sciences">Arts and Sciences</option>
-                    <option value="Other">Other</option>
-                </select>
+                <input type="text" id="userProgram" placeholder="Enter your program of interest" required>
                 
                 <button type="submit">Continue</button>
             `;
