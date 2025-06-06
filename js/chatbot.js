@@ -15,6 +15,13 @@ class ChatbotAPI {
     // Initialize the chatbot
     async initialize() {
         try {
+            // Clear any existing conversation state
+            this.conversationId = null;
+            this.lastMessageId = null;
+            
+            // Clear any stored conversation data
+            localStorage.removeItem('currentConversation');
+            
             // Start a new conversation with an empty message to get initial bot state
             const response = await this.startNewConversation("");
             this.conversationId = response.conversationId;
@@ -32,6 +39,7 @@ class ChatbotAPI {
     // Start a new conversation
     async startNewConversation(message) {
         try {
+            // Always ensure we're starting fresh
             const response = await fetch(`${this.apiEndpoint}/conversation`, {
                 method: 'POST',
                 headers: {
@@ -48,7 +56,7 @@ class ChatbotAPI {
                                 body: message
                             }
                         ],
-                        model: "claude-v3-sonnet"
+                        model: "claude-v3.5-sonnet-v2"
                     }
                 })
             });
@@ -57,7 +65,12 @@ class ChatbotAPI {
                 throw new Error(`API call failed: ${response.status}`);
             }
 
-            return await response.json();
+            const data = await response.json();
+            
+            // Store new conversation ID
+            localStorage.setItem('currentConversation', data.conversationId);
+            
+            return data;
         } catch (error) {
             console.error('Failed to start conversation:', error);
             throw error;
@@ -122,6 +135,16 @@ class ChatbotAPI {
             throw error;
         }
     }
+
+    // Add page visibility change handler
+    setupVisibilityHandler() {
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                // Reset conversation when page becomes visible (e.g., after refresh)
+                this.initialize();
+            }
+        });
+    }
 }
 
 // Chatbot UI Handler
@@ -144,6 +167,7 @@ class ChatbotUI {
         
         this.initializeEventListeners();
         this.setupFileUpload();
+        this.setupVisibilityHandler(); // Add visibility handler
         this.restoreSession();
     }
 
