@@ -1,46 +1,34 @@
 // Chatbot API Configuration
-const API_KEY = 'ebvJBWgVrO7qob6y8j5zF25OiffduTMJ6ScWpJsL';
-const API_ENDPOINT = 'https://01cwcwm9vf.execute-api.us-east-1.amazonaws.com/api';
-const UPLOAD_ENDPOINT = 'http://localhost:3000/api/upload'; // Add separate upload endpoint
+const API_KEY = 'QUyv62nxTz5UebIKVMNAY9Con3IlfksN2SyvVJS0';
+const API_ENDPOINT = 'https://84tzb2l6ri.execute-api.us-east-1.amazonaws.com/api';
+const UPLOAD_ENDPOINT = 'http://localhost:3000/api/upload';
 
 class ChatbotAPI {
     constructor() {
         this.apiKey = API_KEY;
         this.apiEndpoint = API_ENDPOINT;
         this.uploadEndpoint = UPLOAD_ENDPOINT;
-        this.conversationId = null;
+        this.conversationId = 'new_conversation';
         this.lastMessageId = null;
     }
 
     // Initialize the chatbot
     async initialize() {
         try {
-            // Clear any existing conversation state
-            this.conversationId = null;
-            this.lastMessageId = null;
-            
-            // Clear any stored conversation data
-            localStorage.removeItem('currentConversation');
-            
-            // Start a new conversation with an empty message to get initial bot state
-            const response = await this.startNewConversation("");
-            this.conversationId = response.conversationId;
-            this.lastMessageId = response.messageId;
-            
-            // Get initial response
-            const initialResponse = await this.getConversationResponse();
-            return initialResponse;
+            const welcomeMessage = "Hi! I'm your virtual advisor. How can I help you today? 👋";
+            return { message: welcomeMessage };
         } catch (error) {
             console.error('Failed to initialize chatbot:', error);
             throw error;
         }
     }
 
-    // Start a new conversation
-    async startNewConversation(message) {
+    // Send message to API and get response
+    async sendMessage(message) {
         try {
-            // Always ensure we're starting fresh
-            const response = await fetch(`${this.apiEndpoint}/conversation`, {
+            // First send the message
+            console.log('Sending message to API:', message);
+            const postResponse = await fetch(`${this.apiEndpoint}/conversation`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -56,94 +44,65 @@ class ChatbotAPI {
                                 body: message
                             }
                         ],
-                        model: "claude-v3.5-sonnet-v2"
-                    }
+                        model: "claude-v3.5-sonnet-v2",
+                        parent_message_id: null,
+                        message_id: null
+                    },
+                    bot_id: null,
+                    continue_generate: false
                 })
             });
 
-            if (!response.ok) {
-                throw new Error(`API call failed: ${response.status}`);
+            if (!postResponse.ok) {
+                console.error('POST request failed:', postResponse.status, postResponse.statusText);
+                throw new Error(`API call failed: ${postResponse.status}`);
             }
 
-            const data = await response.json();
-            
-            // Store new conversation ID
-            localStorage.setItem('currentConversation', data.conversationId);
-            
-            return data;
-        } catch (error) {
-            console.error('Failed to start conversation:', error);
-            throw error;
-        }
-    }
+            const postData = await postResponse.json();
+            console.log('POST response:', postData);
 
-    // Get conversation response
-    async getConversationResponse() {
-        try {
-            const response = await fetch(`${this.apiEndpoint}/conversation/${this.conversationId || 'new_conversation'}`, {
+            // Then get the response
+            const getResponse = await fetch(`${this.apiEndpoint}/conversation/${this.conversationId}`, {
                 method: 'GET',
                 headers: {
                     'x-api-key': this.apiKey
                 }
             });
 
-            if (!response.ok) {
-                throw new Error(`API call failed: ${response.status}`);
+            if (!getResponse.ok) {
+                console.error('GET request failed:', getResponse.status, getResponse.statusText);
+                throw new Error(`GET conversation failed: ${getResponse.status}`);
             }
 
-            const data = await response.json();
-            
-            // Extract the last assistant message
-            const messages = Object.values(data.messageMap || {});
-            const lastAssistantMessage = messages
-                .filter(msg => msg.role === 'assistant')
-                .pop();
+            const getData = await getResponse.json();
+            console.log('GET response:', getData);
 
-            if (!lastAssistantMessage) {
-                console.warn('No assistant message found in response:', data);
-                return {
-                    message: "I'm having trouble processing your request. Please try again."
-                };
+            // Find the most recent assistant message
+            const messages = Object.values(getData.messageMap || {});
+            const assistantMessages = messages
+                .filter(msg => msg.role === 'assistant')
+                .sort((a, b) => {
+                    const timeA = a.timestamp || 0;
+                    const timeB = b.timestamp || 0;
+                    return timeB - timeA;
+                });
+
+            const lastAssistantMessage = assistantMessages[0];
+
+            if (!lastAssistantMessage?.content?.[0]?.body) {
+                throw new Error('No valid response found');
             }
 
             return {
-                message: lastAssistantMessage.content[0]?.body || "I'm sorry, I couldn't generate a response."
+                message: lastAssistantMessage.content[0].body
             };
+
         } catch (error) {
-            console.error('Failed to get conversation response:', error);
-            throw error;
+            console.error('Error in sendMessage:', error);
+            return {
+                message: "I apologize, but I'm having trouble processing your request. Please try again."
+            };
         }
-    }
-
-    // Send message to API and get response
-    async sendMessage(message) {
-        try {
-            // Send the message
-            const response = await this.startNewConversation(message);
-            this.conversationId = response.conversationId;
-            this.lastMessageId = response.messageId;
-
-            // Get the response
-            const chatResponse = await this.getConversationResponse();
-            
-            // Log the response for debugging
-            console.log('Chat response:', chatResponse);
-            
-            return chatResponse;
-        } catch (error) {
-            console.error('Failed to send message:', error);
-            throw error;
-        }
-    }
-
-    // Add page visibility change handler
-    setupVisibilityHandler() {
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                // Reset conversation when page becomes visible (e.g., after refresh)
-                this.initialize();
-            }
-        });
     }
 }
 
@@ -167,7 +126,6 @@ class ChatbotUI {
         
         this.initializeEventListeners();
         this.setupFileUpload();
-        this.setupVisibilityHandler(); // Add visibility handler
         this.restoreSession();
     }
 
@@ -562,11 +520,12 @@ class ChatbotUI {
 
             // Get response from API
             const response = await this.chatbot.sendMessage(message);
-
+            
             // Remove typing indicator and add bot response
             this.removeTypingIndicator();
-            this.addMessage(response.message);
+            this.addMessage(response.message, false);
         } catch (error) {
+            console.error('Failed to send/receive message:', error);
             this.removeTypingIndicator();
             this.addMessage('Sorry, I encountered an error. Please try again later.', false);
         }

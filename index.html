@@ -38,39 +38,19 @@
         <h2>Featured Programs</h2>
         <div class="program-cards">
             <div class="card">
-                <!-- <img src="https://via.placeholder.com/300x200" alt="Computer Science"> -->
                 <h3>Computer Science</h3>
                 <p>Explore the world of technology and innovation</p>
             </div>
             <div class="card">
-                <!-- <img src="https://via.placeholder.com/300x200" alt="Business"> -->
                 <h3>Business Administration</h3>
                 <p>Develop leadership and management skills</p>
             </div>
             <div class="card">
-                <!-- <img src="https://via.placeholder.com/300x200" alt="Engineering"> -->
                 <h3>Engineering</h3>
                 <p>Create solutions for tomorrow's challenges</p>
             </div>
         </div>
     </section>
-
-    <!-- News Section
-    <section class="news">
-        <h2>Latest News</h2>
-        <div class="news-grid">
-            <div class="news-item">
-                <h3>Research Breakthrough</h3>
-                <p>University researchers make groundbreaking discovery in renewable energy.</p>
-                <a href="#" class="read-more">Read More</a>
-            </div>
-            <div class="news-item">
-                <h3>Campus Events</h3>
-                <p>Join us for the annual science fair next month.</p>
-                <a href="#" class="read-more">Read More</a>
-            </div>
-        </div>
-    </section> -->
 
     <!-- Footer -->
     <footer>
@@ -101,59 +81,30 @@
         </div>
     </footer>
 
-    <!-- Chatbot Icon and Window -->
-    <div class="chatbot-container">
-        <div class="chat-window" id="chatWindow">
-            <div class="chat-header">
-                <h3>Virtual Advisor</h3>
-                <button class="close-chat" id="closeChat">&times;</button>
-            </div>
-            <div class="chat-start" id="chatStart">
-                <button class="start-conversation-btn">Start Conversation</button>
-            </div>
-            <form class="chat-user-form" id="chatUserForm">
-                <label for="userName">Name</label>
-                <input type="text" id="userName" name="userName" required>
-                <label for="userEmail">Email</label>
-                <input type="email" id="userEmail" name="userEmail" required>
-                <button type="submit">Continue</button>
-            </form>
-            <div class="chat-messages" id="chatMessages" style="display: none;">
-                <div class="message bot">
-                    <p>👋 Welcome! I'm your virtual advisor. How can I help you today?</p>
-                </div>
-            </div>
-            <div class="chat-input" id="chatInput" style="display: none;">
-                <input type="text" id="messageInput" placeholder="Type your message...">
-                <button id="sendMessage">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
-        <div class="chatbot-icon" id="chatbotIcon">
-            <i class="fas fa-comments"></i>
-        </div>
+    <!-- 💬 Chatbot Toggle Button -->
+    <button id="chat-toggle"
+        onclick="toggleChat()"
+        style="position: fixed; bottom: 20px; right: 20px; background-color: #d32f2f; color: white; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; z-index: 999;">
+        💬
+    </button>
+
+    <!-- 📥 Chatbot Popup Container --> 
+     <div id="chat-container"
+        style="display: none; position: fixed; bottom: 90px; right: 20px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 10px;">
+        <iframe src="http://18.207.136.218:8080/"
+                width="400" height="600"
+                style="border: none; border-radius: 10px;"></iframe>
     </div>
 
-    <script src="./js/chatbot.js"></script>
-    <!-- Add typing animation styles -->
-    <style type="text/css">
-        @keyframes typing {
-            0% { opacity: 0.3; }
-            50% { opacity: 1; }
-            100% { opacity: 0.3; }
-        }
+     <!-- Script to Toggle Chat  -->
+     <script>
+      function toggleChat() {
+        const container = document.getElementById('chat-container');
+        container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+      }
+    </script>  
+  
 
-        .typing p {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
 
-        .typing p::after {
-            content: "...";
-            animation: typing 1.5s infinite;
-        }
-    </style>
 </body>
-</html> 
+</html>
