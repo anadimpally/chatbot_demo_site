@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Demo Site</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="radius-x-logo.svg" alt="RadiusX Logo" class="logo-img">
+            </div>
+            <ul class="nav-links">
+                <li><span>Home</span></li>
+                <li><span>Academics</span></li>
+                <li><span>Admissions</span></li>
+                <li><span>Research</span></li>
+                <li><span>Campus Life</span></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Welcome to RadiusX University </h1>
+            <p>Empowering minds, shaping futures</p>
+            <button class="cta-button">Learn More</button>
+        </div>
+    </section>
+
+    <!-- Featured Programs -->
+    <section class="programs" id="academics">
+        <h2>Featured Programs</h2>
+        <div class="program-cards">
+            <div class="card">
+                <h3>Computer Science</h3>
+                <p>Explore the world of technology and innovation</p>
+            </div>
+            <div class="card">
+                <h3>Business Administration</h3>
+                <p>Develop leadership and management skills</p>
+            </div>
+            <div class="card">
+                <h3>Engineering</h3>
+                <p>Create solutions for tomorrow's challenges</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>123 University Ave</p>
+                <p>Vancouver, British Columbia</p>
+                <p>Phone: (123) 123-1234</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#careers">Careers</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <span class="social-icon"><i class="fab fa-facebook"></i></span>
+                    <span class="social-icon"><i class="fab fa-twitter"></i></span>
+                    <span class="social-icon"><i class="fab fa-instagram"></i></span>
+                    <span class="social-icon"><i class="fab fa-linkedin"></i></span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 💬 Chatbot Toggle Button -->
+    <button id="chat-toggle"
+        onclick="toggleChat()"
+        style="position: fixed; bottom: 20px; right: 20px; background-color: #d32f2f; color: white; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; z-index: 999;">
+        💬
+    </button>
+
+    <!-- 📥 Chatbot Popup Container --> 
+     <div id="chat-container"
+        style="display: none; position: fixed; bottom: 90px; right: 20px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 10px;">
+        <iframe src="https://radiusxchatbot.com/"
+                width="400" height="600"
+                style="border: none; border-radius: 10px;"></iframe>
+    </div>
+
+     <!-- Script to Toggle Chat  -->
+     <script>
+      function toggleChat() {
+        const container = document.getElementById('chat-container');
+        container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+      }
+    </script>  
+  
+
+
+</body>
+</html>
