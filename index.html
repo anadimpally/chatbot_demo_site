@@ -6,6 +6,15 @@
     <title>University Demo Site</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Chatbot CSS -->
+    <link rel="stylesheet" href="dist/styles.css">
+    
+    <!-- Chatbot Configuration -->
+    <script>
+        window.API_BASE_URL = 'https://84tzb2l6ri.execute-api.us-east-1.amazonaws.com/api';  // Replace with your actual API URL
+        window.API_KEY ='QUyv62nxTz5UebIKVMNAY9Con3IlfksN2SyvVJS0';                 // Replace with your actual API key
+    </script>
 </head>
 <body>
     <!-- Header -->
@@ -81,30 +90,7 @@
         </div>
     </footer>
 
-    <!-- 💬 Chatbot Toggle Button -->
-    <button id="chat-toggle"
-        onclick="toggleChat()"
-        style="position: fixed; bottom: 20px; right: 20px; background-color: #d32f2f; color: white; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; z-index: 999;">
-        💬
-    </button>
-
-    <!-- 📥 Chatbot Popup Container --> 
-     <div id="chat-container"
-        style="display: none; position: fixed; bottom: 90px; right: 20px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 10px;">
-        <iframe src="https://radiusxchatbot.com/"
-                width="400" height="600"
-                style="border: none; border-radius: 10px;"></iframe>
-    </div>
-
-     <!-- Script to Toggle Chat  -->
-     <script>
-      function toggleChat() {
-        const container = document.getElementById('chat-container');
-        container.style.display = (container.style.display === 'none') ? 'block' : 'none';
-      }
-    </script>  
-  
-
-
+    <!-- Chatbot JavaScript (must be at the end) -->
+    <script src="dist/bundle.js"></script>
 </body>
 </html>
