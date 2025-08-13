@@ -318,6 +318,148 @@ body {
     cursor: not-allowed;
 }
 
+.attachment-button {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    width: 40px;
+    height: 40px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    margin-right: 8px;
+}
+
+.attachment-button:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.attachment-button:disabled {
+    background-color: var(--dark-gray);
+    border-color: var(--dark-gray);
+    color: var(--dark-gray);
+    cursor: not-allowed;
+}
+
+/* File Upload Progress */
+.file-upload-progress {
+    background: white;
+    border: 1px solid var(--medium-gray);
+    border-radius: var(--border-radius);
+    padding: 12px;
+    margin: 8px 0;
+    box-shadow: var(--shadow);
+}
+
+.file-upload-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.file-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-color);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-status {
+    font-size: 12px;
+    font-weight: 500;
+    margin-left: 8px;
+}
+
+.file-status.uploading {
+    color: var(--primary-color);
+}
+
+.file-status.uploaded {
+    color: var(--success-color);
+}
+
+.file-status.failed {
+    color: #e53e3e;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    background-color: var(--light-gray);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+.progress-fill.uploaded {
+    background-color: var(--success-color);
+}
+
+.progress-fill.failed {
+    background-color: #e53e3e;
+}
+
+/* File Attachment Display */
+.file-attachment {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    background: var(--light-gray);
+    border-radius: var(--border-radius);
+    margin: 4px 0;
+    border: 1px solid var(--medium-gray);
+}
+
+.file-attachment-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    color: var(--primary-color);
+}
+
+.file-attachment-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.file-attachment-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-attachment-size {
+    font-size: 12px;
+    color: var(--dark-gray);
+}
+
+.file-attachment-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 12px;
+    margin-left: 8px;
+}
+
+.file-attachment-link:hover {
+    text-decoration: underline;
+}
+
 /* Empty State */
 .empty-state {
     display: flex;
